@@ -5,8 +5,8 @@ macro_rules! days {
         )*
         fn print_all_solutions() {
             $(
-                  println!("{}: Part One Solution: {}", stringify!($x), $x::solve(Part::PartOne));
-                  println!("{}: Part Two Solution: {}", stringify!($x), $x::solve(Part::PartTwo));
+                  println!("{}: Part One Solution: {}", stringify!($x), $x::solve(Part::One));
+                  println!("{}: Part Two Solution: {}", stringify!($x), $x::solve(Part::Two));
             )*
         }
     };
