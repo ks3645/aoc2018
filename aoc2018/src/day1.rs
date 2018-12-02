@@ -14,13 +14,12 @@ pub fn find_frequency(input:String, part: Part) -> i32 {
         .map(|s| String::from(s))
         .map(|s| s.trim().parse::<i32>().unwrap());
 
-    let mut seen_freqs = HashSet::new();
-
     let result:i32 = match part {
         Part::One => changes.sum(),
         Part::Two => {
             let mut cycle = changes.cycle();
             let mut freq = 0;
+            let mut seen_freqs = HashSet::new();
             let mut first_repeat= i32::min_value();
             'change_cycle: loop {
                 match cycle.next() {
