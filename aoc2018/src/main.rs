@@ -1,22 +1,18 @@
-macro_rules! days {
+macro_rules! day {
     ( $( $x:ident ),* ) => {
         $(
-            mod $x;
+            println!("{}: Part One Solution: {}", stringify!($x), $x::solve(Part::One));
+            println!("{}: Part Two Solution: {}", stringify!($x), $x::solve(Part::Two));
         )*
-        fn print_all_solutions() {
-            $(
-                  println!("{}: Part One Solution: {}", stringify!($x), $x::solve(Part::One));
-                  println!("{}: Part Two Solution: {}", stringify!($x), $x::solve(Part::Two));
-            )*
-        }
     };
 }
 
 mod utils;
 use utils::Part;
-days!(day1);
+mod day1;
+mod day2;
 
 
 fn main() {
-    print_all_solutions();
+    day!( day2);
 }
