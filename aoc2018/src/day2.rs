@@ -1,8 +1,6 @@
 use utils;
 use utils::Part;
 use std::collections::HashMap;
-use std::collections::HashSet;
-use std::iter::FromIterator;
 
 pub fn solve(part: Part) -> String {
     let mut input = String::new();

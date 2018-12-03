@@ -11,8 +11,9 @@ mod utils;
 use utils::Part;
 mod day1;
 mod day2;
+mod day3;
 
 
 fn main() {
-    day!( day2);
+    day!( day3);
 }
