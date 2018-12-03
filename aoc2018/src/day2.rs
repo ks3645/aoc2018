@@ -1,60 +1,52 @@
 use utils;
 use utils::Part;
 use std::collections::HashMap;
+use std::collections::HashSet;
+use std::iter::FromIterator;
 
 pub fn solve(part: Part) -> String {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 2).unwrap();
 
-    match part {
-        Part::One => do_the_thing(input).to_string(),
-        Part::Two => do_part_two(input),
-    }
+    process(input, part)
 }
 
-fn do_part_two(input:String) -> String {
-    let lines:Vec<&str> = input.split('\n').collect();
+fn process(input:String, part:Part) -> String {
+    let data:Vec<(&str, HashMap<char, i32>)> = input.split('\n')
+        .map(|s| s.trim())
+        .map(|s| (s, get_char_counts(s)))
+        .collect();
 
-    let mut selected_line:usize = 0;
 
-    let mut word_one = String::new();
-    let mut word_two = String::new();
+    match part {
+       Part::One => {
+           let checksum_factors = data.iter()
+               .map(|data_tuple| determine_linetype(&data_tuple.1))
+               .fold((0, 0), |acc, linetype| (acc.0 + linetype.value().0, acc.1 + linetype.value().1));
 
-    'outer: loop {
-        let first_word = lines[selected_line];
+           (checksum_factors.0 * checksum_factors.1).to_string()
+       },
+        Part::Two => {
+            let mut result = String::new();
 
-        println!("First Word: {}", first_word);
-
-        for i in (selected_line+1)..lines.len() {
-            let second_word = lines[i];
-
-            println!("Second Word: {}", second_word);
-
-            let mut diff_count = 0;
-
-            for i in 0..first_word.len()-1 {
-                if first_word[i..i+1] != second_word[i..i+1] {
-                    diff_count += 1;
+            for i in 0..data.len() {
+                for j in i+1..data.len() {
+                    let diff = diff(data[i].0, data[j].0);
+                    if diff == 1 {
+                        result = get_intersected_string(data[i].0, data[j].0);
+                    }
                 }
             }
 
-            println!("diff_count: {0}", diff_count);
-            if diff_count == 1 {
-                word_one = String::from(first_word);
-                word_two = String::from(second_word);
-                break 'outer;
-            }
-        }
-
-        selected_line += 1;
-        if selected_line == lines.len() {
-            break 'outer;
+            result
         }
     }
+}
 
+fn get_intersected_string(word_one:&str, word_two:&str) -> String {
     let mut result = String::new();
 
-    for i in 0..word_one.len() - 1 {
+    for i in 0..word_one.len() {
         if word_one[i..i+1] == word_two[i..i+1] {
             result += &word_one[i..i+1];
         }
@@ -63,32 +55,27 @@ fn do_part_two(input:String) -> String {
     result
 }
 
-fn do_the_thing(input:String) -> i32 {
-    let lines = input.split('\n');
-
-
-    let mut twos_count = 0;
-    let mut threes_count = 0;
-    for line in lines {
-        let linetype = determine_linetype(line);
-
-        match linetype {
-            LineType::None => {},
-            LineType::Two => {
-                twos_count += 1;
-            }
-            LineType::Three => {
-                threes_count += 1;
-            }
-            LineType::TwoAndThree => {
-                twos_count += 1;
-                threes_count += 1;
-            }
+fn diff(one:&str, two:&str) -> i32 {
+    let mut diff = 0;
+    for i in 0..one.len() {
+        if one[i..i+1] != two[i..i+1] {
+            diff += 1;
         }
     }
-
-    twos_count * threes_count
+    diff
 }
+
+fn get_char_counts(input:&str) -> HashMap<char, i32> {
+    let mut counts = HashMap::new();
+
+    for char in input.chars() {
+        *counts.entry(char).or_insert(0) += 1;
+    }
+
+    counts
+}
+
+
 
 #[derive(PartialEq)]
 enum LineType {
@@ -98,36 +85,37 @@ enum LineType {
     TwoAndThree,
 }
 
-fn determine_linetype (line:&str) -> LineType {
-    let mut charcounts = HashMap::new();
-
-    for c in line.chars() {
-        if charcounts.contains_key(&c){
-            let val = charcounts.get_mut(&c).unwrap();
-            *val += 1;
-        }
-        else {
-            charcounts.insert(c, 1);
+impl LineType {
+    fn value(&self) -> (u32, u32) {
+        match *self {
+            LineType::None => (0, 0),
+            LineType::Two => (1, 0),
+            LineType::Three => (0, 1),
+            LineType::TwoAndThree => (1, 1)
         }
     }
+}
 
+fn determine_linetype (charcounts:&HashMap<char, i32>) -> LineType {
     let mut result = LineType::None;
     for (_,v) in charcounts {
-        if v == 2 {
-            if result == LineType::Three || result == LineType::TwoAndThree {
+        if *v == 2 {
+            if result == LineType::Three {
                 result = LineType::TwoAndThree;
+                break;
             }
             else {
                 result = LineType::Two;
             }
         }
-        if v == 3 {
-            if result == LineType::Two || result == LineType::TwoAndThree {
+        if *v == 3 {
+            if result == LineType::Two {
                 result = LineType::TwoAndThree;
+                break;
             }
-                else {
-                    result = LineType::Three;
-                }
+            else {
+                result = LineType::Three;
+            }
         }
     }
 
