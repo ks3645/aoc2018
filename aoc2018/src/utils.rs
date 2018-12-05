@@ -13,3 +13,8 @@ pub fn read_input_to_string(buf: &mut String, day: u8) -> io::Result<usize> {
     let mut file = File::open(filename).expect("Invalid Day Input");
     file.read_to_string(buf)
 }
+
+#[macro_export]
+macro_rules! parse_args {
+    ($fmt:expr, $($args:tt)*) => {{}};
+}
