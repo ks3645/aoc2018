@@ -19,8 +19,10 @@ mod day3;
 mod day4;
 #[allow(dead_code)]
 mod day5;
+#[allow(dead_code)]
 mod day6;
+mod day7;
 
 fn main() {
-    day!(/*day1, day2, day3, day4, day5,*/ day6);
+    day!(/*day1, day2, day3, day4, day5, day6,*/ day7);
 }

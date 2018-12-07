@@ -1,8 +1,6 @@
 use utils;
 use utils::Part;
 use std::collections::HashMap;
-use std::collections::HashSet;
-use std::iter::FromIterator;
 
 pub fn solve(part: Part) -> i32 {
     let mut input = String::new();
@@ -140,7 +138,7 @@ fn part_one(input:String) -> i32 {
 
     one.iter().zip(two.iter())
         .filter(|(a,b)| a.1 == b.1)
-        .map(|(a, b)| *a)
+        .map(|(a, _)| *a)
         .max_by_key(|(_, count)| *count).unwrap().1 as i32
 }
 
