@@ -25,13 +25,13 @@ fn do_the_thing(input: String, part: Part) -> i32 {
             .sum::<usize>() as i32,
         Part::Two => {
             let root  = data_map.keys().filter_map(|k| if k.id == 0 {Some(k)} else {None}).next().unwrap();
-            
-            resolve_pointer_value_iteratively(root, 0, &data_map) as i32
+
+            resolve_pointer_value_iteratively(root, &data_map) as i32
         }
     }
 }
 
-fn resolve_pointer_value_iteratively(node: &NodeHeader, ptr: usize, data: &HashMap<NodeHeader, Vec<MetadataType>>) -> usize {
+fn resolve_pointer_value_iteratively(node: &NodeHeader, data: &HashMap<NodeHeader, Vec<MetadataType>>) -> usize {
     let mut stack: Vec<NodeHeader> = vec![];
 
     stack.push(node.clone());
