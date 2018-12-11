@@ -52,22 +52,20 @@ fn play_the_game(marble_num:i32, circle:&mut Vec<i32>, current_marble:&mut i32) 
         score_earned += marble_num;
         *current_marble -= 7;
         while current_marble < &mut 0 { *current_marble += circle.len() as i32;}
-        let removed = circle.remove(*current_marble as usize + 1);
+        let removed = circle.remove(insert_pos(marble_num) as usize);
         score_earned += removed;
 
         //println!("score earned: {} + {}", marble_num, removed);
     }
     else {
-        *current_marble += 2;
+        let pos = insert_pos(marble_num);
 
-        if *current_marble == (circle.len()+1) as i32{
+        if pos == (circle.len()+1) as i32{
             circle.push(marble_num)
         }
         else {
-            *current_marble %= circle.len() as i32;
-            circle.insert(current_marble.clone() as usize + 1, marble_num);
+            circle.insert(pos as usize, marble_num);
         }
-
     }
 
     score_earned
@@ -96,16 +94,30 @@ fn insert_pos_from_marble_num (marble_num:i32) -> i32 {
 }
 
 fn insert_pos(marble_num:i32) -> i32 {
-    if marble_num == 0 { return 1; }
     if marble_num == 1 { return 1; }
-    if marble_num % 23 == 0 {
-        print!("last: {}    ", insert_pos(marble_num - 1));
-        insert_pos(marble_num - 1) - 6
-    }
-    else {
-        print!("last: {}    ", insert_pos(marble_num - 1));
-        (insert_pos(marble_num - 1) + 2) % (len_from_marble_num(marble_num -1) + 1)
-    }
+    let mut pos = match marble_num % 23 == 0 {
+        true => insert_pos(marble_num - 1) - 7,
+        false => insert_pos(marble_num - 1) + 2,
+    };
+    let len = len_from_marble_num(marble_num - 1);
+    let result = match marble_num % 23 == 0 {
+        true => {
+            pos += len;
+            if pos == len {
+                pos
+            } else {
+                pos % len
+            }
+        }
+        false => {
+            if pos == len {
+                pos
+            } else {
+                pos % len
+            }
+        }
+    };
+    result
 }
 
 fn insert_pos_with_offset(marble_num:i32) -> i32 {
